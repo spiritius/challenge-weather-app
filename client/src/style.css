@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+:root {
+  --sans: "DM Sans", system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  --element-bg: --alpha(var(--color-slate-100) / 10%);
+  --element-border: --alpha(var(--color-slate-100) / 5%);
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light dark;
+  color: var(--color-gray-300);
+  background: var(--color-indigo-950);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+body {
+  margin: 0.75rem;
+
+  @media (min-width: 768px) {
+    margin: 2rem;
+  }
+}
+
+.card {
+  background-color: var(--element-bg);
+  border: 1px solid var(--element-border);
+  border-radius: var(--radius-lg);
+}
