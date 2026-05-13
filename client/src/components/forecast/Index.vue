@@ -1,6 +1,6 @@
 <template>
   <div class="grid">
-    <div class="flex flex-col gap-8">
+    <div class="flex flex-col gap-6">
       <Today :forecast="forecast" />
       <Daily :forecast="forecast" />
     </div>

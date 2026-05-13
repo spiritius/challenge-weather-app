@@ -1,22 +1,33 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <div class="today">
       <div>
         <h2 class="text-white text-2xl font-bold">CityName</h2>
         <div v-if="date" class="text-sm mt-1">{{ date }}</div>
       </div>
-      <div class="flex gap-8 items-center">
-        <div class="w-10 h-10">[icon]</div>
+      <div class="flex gap-4 items-center">
+        <WeatherIcon
+          v-if="weatherCode !== undefined"
+          :weatherCode="weatherCode"
+          size="lg"
+        />
         <div class="text-white text-6xl font-semibold">
-          {{ forecast.current?.temperature_2m }}&deg;
+          {{ forecast.current?.temperature_2m
+          }}{{ forecast.current_units?.apparent_temperature }}
         </div>
       </div>
     </div>
 
     <div class="today__details">
-      <div class="today__details_item">
-        <div class="text-sm">Feels like</div>
-        <div class="font-semibold text-white text-xl">18&deg;</div>
+      <div
+        v-for="item in details"
+        :key="item.label"
+        class="today__details_item"
+      >
+        <div class="text-sm">{{ item.label }}</div>
+        <div class="font-semibold text-white text-xl">
+          {{ item.value }} {{ item.unit }}
+        </div>
       </div>
     </div>
   </div>
@@ -25,17 +36,47 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { ForecastResponse } from "@/services/api";
+import WeatherIcon from "@/components/shared/WeatherIcon.vue";
 
 const props = defineProps<{
   forecast: ForecastResponse;
 }>();
+
+const weatherCode = computed(() => props.forecast.current?.weather_code);
+
+const details = computed(() => [
+  {
+    label: "Feels like",
+    value: props.forecast.current?.apparent_temperature,
+    unit: props.forecast.current_units?.apparent_temperature,
+  },
+  {
+    label: "Humidity",
+    value: props.forecast.current?.relative_humidity_2m,
+    unit: props.forecast.current_units?.relative_humidity_2m,
+  },
+  {
+    label: "Wind",
+    value: props.forecast.current?.wind_speed_10m,
+    unit: props.forecast.current_units?.wind_speed_10m,
+  },
+  {
+    label: "Precipitation",
+    value: props.forecast.current?.precipitation,
+    unit: props.forecast.current_units?.precipitation,
+  },
+]);
 
 const date = computed(() => {
   const currentTime = props.forecast.current?.time;
   if (!currentTime) {
     return "";
   }
+
   const currentDate = new Date(currentTime);
+  if (Number.isNaN(currentDate.getTime())) {
+    return "";
+  }
 
   return new Intl.DateTimeFormat("en-GB", {
     dateStyle: "full",
@@ -56,18 +97,20 @@ const date = computed(() => {
   );
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 2rem;
 
   @media (min-width: 768px) {
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    text-align: left;
     min-height: 180px;
   }
 
   &__details {
     display: grid;
-    gap: 1.5rem;
+    gap: 0.75rem;
     grid-template-columns: repeat(2, 1fr);
 
     @media (min-width: 768px) {
