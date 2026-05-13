@@ -5,6 +5,27 @@ export type ForecastQuery = {
   longitude: number | string;
 };
 
+export type Current = {
+  time: string;
+  interval: number;
+  temperature_2m?: number;
+  apparent_temperature?: number;
+  relative_humidity_2m?: number;
+  precipitation?: number;
+  wind_speed_10m?: number;
+  weather_code?: number;
+};
+export type CurrentUnits = {
+  time: string;
+  interval: string;
+  temperature_2m?: string;
+  apparent_temperature?: string;
+  relative_humidity_2m?: string;
+  precipitation?: string;
+  wind_speed_10m?: string;
+  weather_code?: string;
+};
+
 export type ForecastResponse = {
   latitude: number;
   longitude: number;
@@ -13,8 +34,8 @@ export type ForecastResponse = {
   timezone: string;
   timezone_abbreviation: string;
   elevation: number;
-  current_units?: Record<string, string>;
-  current?: Record<string, string | number | null>;
+  current_units?: CurrentUnits;
+  current?: Current;
 };
 
 export type LocationSearchResult = {

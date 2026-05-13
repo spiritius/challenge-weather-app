@@ -1,17 +1,20 @@
 <template>
   <div class="grid">
     <div class="flex flex-col gap-8">
-      <Today />
-      <Daily />
+      <Today :forecast="forecast" />
+      <Daily :forecast="forecast" />
     </div>
-    <Hourly />
+    <Hourly :forecast="forecast" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ForecastResponse } from "@/services/api";
 import Daily from "./Daily.vue";
 import Hourly from "./Hourly.vue";
 import Today from "./Today.vue";
+
+defineProps<{ forecast: ForecastResponse }>();
 </script>
 
 <style lang="scss" scoped>

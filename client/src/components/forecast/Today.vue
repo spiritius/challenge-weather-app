@@ -3,11 +3,13 @@
     <div class="today">
       <div>
         <h2 class="text-white text-2xl font-bold">CityName</h2>
-        <div class="text-sm mt-1">{{ date }}</div>
+        <div v-if="date" class="text-sm mt-1">{{ date }}</div>
       </div>
       <div class="flex gap-8 items-center">
         <div class="w-10 h-10">[icon]</div>
-        <div class="text-white text-6xl font-semibold">20&deg;</div>
+        <div class="text-white text-6xl font-semibold">
+          {{ forecast.current?.temperature_2m }}&deg;
+        </div>
       </div>
     </div>
 
@@ -22,9 +24,18 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { ForecastResponse } from "@/services/api";
+
+const props = defineProps<{
+  forecast: ForecastResponse;
+}>();
 
 const date = computed(() => {
-  const currentDate = new Date();
+  const currentTime = props.forecast.current?.time;
+  if (!currentTime) {
+    return "";
+  }
+  const currentDate = new Date(currentTime);
 
   return new Intl.DateTimeFormat("en-GB", {
     dateStyle: "full",
