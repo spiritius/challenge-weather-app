@@ -1,10 +1,10 @@
 <template>
   <div class="grid">
     <div class="flex flex-col gap-6">
-      <Today :forecast="forecast" />
+      <Today :forecast="forecast" :city="city" />
       <Daily v-if="daily" :daily="daily" />
     </div>
-    <Hourly :forecast="forecast" />
+    <Hourly v-if="hourly" :hourly="hourly" />
   </div>
 </template>
 
@@ -15,9 +15,13 @@ import Daily from "./Daily.vue";
 import Hourly from "./Hourly.vue";
 import Today from "./Today.vue";
 
-const props = defineProps<{ forecast: ForecastResponse }>();
+const props = defineProps<{
+  forecast: ForecastResponse;
+  city: string;
+}>();
 
 const daily = computed(() => props.forecast.daily);
+const hourly = computed(() => props.forecast.hourly);
 </script>
 
 <style lang="scss" scoped>

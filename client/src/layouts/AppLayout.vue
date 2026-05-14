@@ -2,13 +2,15 @@
   <main>
     <Header />
 
-    <template v-if="forecast">
+    <Error v-if="isError" @onRetry="tryReload" />
+
+    <template v-else>
       <Title />
       <Search />
-      <Forecast :forecast="forecast" />
-    </template>
 
-    <Error v-else @onRetry="tryReload" />
+      <Loading v-if="isLoading" />
+      <Forecast v-else-if="forecast" :forecast="forecast" :city="city" />
+    </template>
   </main>
 </template>
 
@@ -21,19 +23,23 @@ import Title from "@/components/Title.vue";
 import Forecast from "@/components/forecast/Index.vue";
 import Error from "@/components/Error.vue";
 import api, { ForecastResponse } from "@/services/api";
+import Loading from "@/components/Loading.vue";
 
 const DEFAULT_COORDS = {
-  latitude: "52.52",
-  longitude: "13.419998",
+  latitude: "55.75204",
+  longitude: "37.61781",
 };
+
+const DEFAULT_CITY = "Moscow";
 
 const forecast = ref<ForecastResponse | null>(null);
+const city = ref<string>(DEFAULT_CITY);
+const isLoading = ref(false);
+const isError = ref(false);
 
-const tryReload = () => {
-  console.log("✳️ -> try reload");
-};
-
-onMounted(async () => {
+const loadForecast = async () => {
+  isLoading.value = true;
+  isError.value = false;
   const coords = {
     latitude: DEFAULT_COORDS.latitude,
     longitude: DEFAULT_COORDS.longitude,
@@ -84,7 +90,23 @@ onMounted(async () => {
     }
   }
 
-  forecast.value = await api.getForecast(coords);
+  try {
+    city.value = await api.getCityName(coords);
+    forecast.value = await api.getForecast(coords);
+  } catch {
+    forecast.value = null;
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const tryReload = async () => {
+  await loadForecast();
+};
+
+onMounted(async () => {
+  await loadForecast();
 });
 </script>
 

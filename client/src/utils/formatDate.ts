@@ -38,3 +38,16 @@ export function formatWeekday(
     weekday,
   }).format(date);
 }
+
+export function formatTime(dateString?: string) {
+  const date = parseDate(dateString);
+  if (!date) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
+}

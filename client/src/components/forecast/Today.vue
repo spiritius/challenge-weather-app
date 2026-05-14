@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-6">
     <div class="today">
       <div>
-        <h2 class="text-white text-2xl font-bold">CityName</h2>
+        <h2 class="text-white text-2xl font-bold">{{ city }}</h2>
         <div v-if="date" class="text-sm mt-1">{{ date }}</div>
       </div>
       <div class="flex gap-4 items-center">
@@ -41,6 +41,7 @@ import { formatDate } from "@/utils/formatDate";
 
 const props = defineProps<{
   forecast: ForecastResponse;
+  city: string;
 }>();
 
 const weatherCode = computed(() => props.forecast.current?.weather_code);

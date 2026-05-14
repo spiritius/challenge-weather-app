@@ -40,6 +40,12 @@ export type DailyUnits = {
   temperature_2m_min?: string;
 };
 
+export type Hourly = {
+  time: string[];
+  temperature_2m?: number[];
+  weather_code?: number[];
+};
+
 export type ForecastResponse = {
   latitude: number;
   longitude: number;
@@ -51,7 +57,8 @@ export type ForecastResponse = {
   current_units?: CurrentUnits;
   current?: Current;
   daily_units?: DailyUnits;
-  daily: Daily;
+  daily?: Daily;
+  hourly?: Hourly;
 };
 
 export type LocationSearchResult = {
@@ -86,9 +93,16 @@ export function searchLocations(location: string) {
   });
 }
 
+export function getCityName(coords: ForecastQuery) {
+  return request<string>("/getCityName", {
+    query: coords,
+  });
+}
+
 const api = {
   getForecast,
   searchLocations,
+  getCityName,
 };
 
 export default api;

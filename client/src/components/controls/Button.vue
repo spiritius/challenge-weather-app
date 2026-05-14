@@ -1,7 +1,7 @@
 <template>
   <button
     class="button"
-    :class="`button--${variant}`"
+    :class="[`button--${variant}`, `button--${size}`]"
     :type="type"
     :disabled="disabled"
   >
@@ -20,11 +20,13 @@ withDefaults(
     type?: "button" | "submit" | "reset";
     disabled?: boolean;
     variant?: "primary" | "secondary";
+    size?: "md" | "sm";
   }>(),
   {
     type: "button",
     disabled: false,
     variant: "primary",
+    size: "md",
   }
 );
 </script>
@@ -35,9 +37,7 @@ withDefaults(
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
   border-radius: var(--radius-md);
-  font-size: var(--text-base);
   border: 1px solid transparent;
   cursor: pointer;
   transition: background-color 180ms ease, border-color 180ms ease,
@@ -58,6 +58,16 @@ withDefaults(
   background-color: var(--element-bg);
   color: var(--color-gray-100);
   border-color: var(--element-border);
+}
+
+.button--md {
+  padding: 0.5rem 1rem;
+  font-size: var(--text-base);
+}
+
+.button--sm {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
 }
 
 .button__icon {
