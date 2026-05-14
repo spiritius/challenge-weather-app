@@ -3,7 +3,7 @@ import { getForecast, getLocationList } from "../controllers/index";
 
 const router = express.Router();
 
-router.get("/forecast/", getForecast);
+router.get("/forecast", getForecast);
 router.get("/search", getLocationList);
 
 router.use("*path", (req, res) => {

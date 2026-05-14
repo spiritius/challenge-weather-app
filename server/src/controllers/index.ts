@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 
 const openMeteoUrl = process.env.OPEN_METEO_URL;
-const currentData = process.env.METEO_CURRENT_DATA || "";
 if (!openMeteoUrl) {
   throw new Error("OPEN_METEO_URL is not defined");
 }
+
+const currentData = process.env.METEO_CURRENT_DATA || "";
+const dailyData = process.env.METEO_DAILY_DATA || "";
 
 const geocodingUrl = process.env.GEOCODING_URL;
 
@@ -17,6 +19,7 @@ export const getForecast = (req: Request, res: Response) => {
     latitude: req.query.latitude as string,
     longitude: req.query.longitude as string,
     current: currentData,
+    daily: dailyData,
     // hourly: "temperature_2m",
   };
   if (!coordinates.latitude || !coordinates.longitude) {

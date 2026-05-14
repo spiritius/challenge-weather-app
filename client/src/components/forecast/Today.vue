@@ -8,7 +8,7 @@
       <div class="flex gap-4 items-center">
         <WeatherIcon
           v-if="weatherCode !== undefined"
-          :weatherCode="weatherCode"
+          :code="weatherCode"
           size="lg"
         />
         <div class="text-white text-6xl font-semibold">
@@ -37,6 +37,7 @@
 import { computed } from "vue";
 import { ForecastResponse } from "@/services/api";
 import WeatherIcon from "@/components/shared/WeatherIcon.vue";
+import { formatDate } from "@/utils/formatDate";
 
 const props = defineProps<{
   forecast: ForecastResponse;
@@ -67,21 +68,7 @@ const details = computed(() => [
   },
 ]);
 
-const date = computed(() => {
-  const currentTime = props.forecast.current?.time;
-  if (!currentTime) {
-    return "";
-  }
-
-  const currentDate = new Date(currentTime);
-  if (Number.isNaN(currentDate.getTime())) {
-    return "";
-  }
-
-  return new Intl.DateTimeFormat("en-GB", {
-    dateStyle: "full",
-  }).format(currentDate);
-});
+const date = computed(() => formatDate(props.forecast.current?.time));
 </script>
 
 <style lang="scss" scoped>

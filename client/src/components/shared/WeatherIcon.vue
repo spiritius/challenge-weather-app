@@ -17,7 +17,7 @@ import { computed } from "vue";
 
 const props = withDefaults(
   defineProps<{
-    weatherCode: number;
+    code: number;
     size?: "md" | "lg";
   }>(),
   {
@@ -37,8 +37,8 @@ const CODES = {
 } satisfies Record<string, number[]>;
 
 const icon = computed(() => {
-  const iconEntry = Object.entries(CODES).find(([, weatherCodes]) =>
-    weatherCodes.includes(props.weatherCode)
+  const iconEntry = Object.entries(CODES).find(([, codes]) =>
+    codes.includes(props.code)
   );
 
   return iconEntry?.[0] ?? SunnyIcon;

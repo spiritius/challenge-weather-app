@@ -26,6 +26,20 @@ export type CurrentUnits = {
   weather_code?: string;
 };
 
+export type Daily = {
+  time: string[];
+  weather_code?: number[];
+  temperature_2m_max?: number[];
+  temperature_2m_min?: number[];
+};
+
+export type DailyUnits = {
+  time: string;
+  weather_code?: string;
+  temperature_2m_max?: string;
+  temperature_2m_min?: string;
+};
+
 export type ForecastResponse = {
   latitude: number;
   longitude: number;
@@ -36,6 +50,8 @@ export type ForecastResponse = {
   elevation: number;
   current_units?: CurrentUnits;
   current?: Current;
+  daily_units?: DailyUnits;
+  daily: Daily;
 };
 
 export type LocationSearchResult = {
