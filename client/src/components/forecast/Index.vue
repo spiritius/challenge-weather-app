@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { ForecastResponse } from "@/services/api";
+import type { ForecastResponse } from "@/services/types";
 import Daily from "./Daily.vue";
 import Hourly from "./Hourly.vue";
 import Today from "./Today.vue";

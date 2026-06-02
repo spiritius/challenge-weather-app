@@ -6,7 +6,7 @@
 
     <template v-else>
       <Title />
-      <Search />
+      <Search @onSearchResult="onSearchResult" />
 
       <Loading v-if="isLoading" />
       <Forecast v-else-if="forecast" :forecast="forecast" :city="city" />
@@ -22,7 +22,8 @@ import Search from "@/components/Search.vue";
 import Title from "@/components/Title.vue";
 import Forecast from "@/components/forecast/Index.vue";
 import Error from "@/components/Error.vue";
-import api, { ForecastResponse } from "@/services/api";
+import api from "@/services/api";
+import type { ForecastResponse, LocationSearchResult } from "@/services/types";
 import Loading from "@/components/Loading.vue";
 
 const DEFAULT_COORDS = {
@@ -30,16 +31,56 @@ const DEFAULT_COORDS = {
   longitude: "37.61781",
 };
 
-const DEFAULT_CITY = "Moscow";
+const DEFAULT_CITY = Cookie.get("city") || "Moscow";
 
 const forecast = ref<ForecastResponse | null>(null);
 const city = ref<string>(DEFAULT_CITY);
 const isLoading = ref(false);
 const isError = ref(false);
 
-const loadForecast = async () => {
+const persistCoords = (latitude: string, longitude: string) => {
+  Cookie.set("latitude", latitude);
+  Cookie.set("longitude", longitude);
+};
+
+const updateWeather = async (
+  coords: { latitude: string; longitude: string },
+  fallbackCity = ""
+) => {
   isLoading.value = true;
   isError.value = false;
+
+  try {
+    if (fallbackCity) {
+      forecast.value = await api.getForecast(coords);
+      city.value = fallbackCity;
+    } else {
+      const [forecastResult, cityResult] = await Promise.allSettled([
+        api.getForecast(coords),
+        api.getCityName(coords),
+      ]);
+
+      if (forecastResult.status === "rejected") {
+        throw forecastResult.reason;
+      }
+
+      forecast.value = forecastResult.value;
+
+      city.value =
+        cityResult.status === "fulfilled" && cityResult.value
+          ? cityResult.value
+          : fallbackCity;
+    }
+  } catch {
+    forecast.value = null;
+    city.value = fallbackCity || DEFAULT_CITY;
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const loadForecast = async () => {
   const coords = {
     latitude: DEFAULT_COORDS.latitude,
     longitude: DEFAULT_COORDS.longitude,
@@ -83,26 +124,30 @@ const loadForecast = async () => {
     const currentLocation = await getCurrentLocation();
 
     if (currentLocation) {
-      Cookie.set("latitude", currentLocation.latitude);
-      Cookie.set("longitude", currentLocation.longitude);
-
+      persistCoords(currentLocation.latitude, currentLocation.longitude);
       setCoords(currentLocation.latitude, currentLocation.longitude);
     }
   }
 
-  try {
-    city.value = await api.getCityName(coords);
-    forecast.value = await api.getForecast(coords);
-  } catch {
-    forecast.value = null;
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-  }
+  const cityName = Cookie.get("city") || "";
+
+  await updateWeather(coords, cityName);
 };
 
 const tryReload = async () => {
   await loadForecast();
+};
+
+const onSearchResult = async (location: LocationSearchResult) => {
+  const coords = {
+    latitude: location.latitude.toString(),
+    longitude: location.longitude.toString(),
+  };
+  const fallbackCity = location.name || DEFAULT_CITY;
+  Cookie.set("city", location.name);
+
+  persistCoords(coords.latitude, coords.longitude);
+  await updateWeather(coords, fallbackCity);
 };
 
 onMounted(async () => {

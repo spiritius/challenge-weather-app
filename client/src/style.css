@@ -36,3 +36,23 @@ body {
   border: 1px solid var(--element-border);
   border-radius: var(--radius-lg);
 }
+
+*::-webkit-scrollbar-thumb {
+  border-radius: var(--radius-xl);
+  border: 6px solid transparent;
+  background-clip: content-box;
+  background-color: var(--element-bg);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 20px;
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+}

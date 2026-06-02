@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { Daily } from "@/services/api";
+import type { Daily } from "@/services/types";
 import WeatherIcon from "../shared/WeatherIcon.vue";
 import { formatWeekday } from "@/utils/formatDate";
 

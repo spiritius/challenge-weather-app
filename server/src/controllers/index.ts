@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import { ResolveFnOutput } from "node:module";
+import { NextFunction, Request, Response } from "express";
+import { CustomError } from "../errors/custom-error";
 
 const openMeteoUrl = process.env.OPEN_METEO_URL;
 if (!openMeteoUrl) {
@@ -20,7 +20,62 @@ if (!openStreetMapUrl) {
   throw new Error("OPEN_SCTREET_MAP_URL is not defined");
 }
 
-export const getForecast = (req: Request, res: Response) => {
+async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
+  try {
+    const response = await fetch(url, init);
+
+    if (!response.ok) {
+      const payload = await response.text();
+      console.error("Upstream request failed", {
+        url,
+        status: response.status,
+        statusText: response.statusText,
+        payload,
+      });
+
+      throw new CustomError(
+        502,
+        "UPSTREAM_ERROR",
+        `Upstream request failed with status ${response.status}`,
+        {
+          url,
+          status: response.status,
+          payload,
+        }
+      );
+    }
+
+    return (await response.json()) as T;
+  } catch (error) {
+    if (error instanceof CustomError) {
+      throw error;
+    }
+
+    console.error("Fetch request failed", {
+      url,
+      error,
+      cause:
+        error instanceof Error && "cause" in error ? error.cause : undefined,
+    });
+
+    throw new CustomError(
+      502,
+      "FETCH_FAILED",
+      "Failed to fetch upstream data",
+      {
+        url,
+        cause:
+          error instanceof Error && "cause" in error ? error.cause : undefined,
+      }
+    );
+  }
+}
+
+export const getForecast = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const coordinates = {
     latitude: req.query.latitude as string,
     longitude: req.query.longitude as string,
@@ -29,47 +84,87 @@ export const getForecast = (req: Request, res: Response) => {
     hourly: hourlyData,
   };
   if (!coordinates.latitude || !coordinates.longitude) {
-    throw new Error("Wrong URL query params");
+    return next(
+      new CustomError(400, "INVALID_QUERY", "Wrong URL query params")
+    );
   }
 
   const params = new URLSearchParams(coordinates);
 
-  fetch(`${openMeteoUrl}?${params}`)
-    .then((response) => response.json())
-    .then((json) => res.json(json));
+  try {
+    const json = await fetchJson(`${openMeteoUrl}?${params}`);
+    res.json(json);
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const getLocationList = (req: Request, res: Response) => {
+export const getLocationList = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const location = req.query.location as string;
 
   if (!location) {
-    throw new Error("Wrong URL query params");
+    return next(
+      new CustomError(400, "INVALID_QUERY", "Wrong URL query params")
+    );
   }
 
-  fetch(`${geocodingUrl}?name=${location}`)
-    .then((response) => response.json())
-    .then((json) => res.json(json));
+  try {
+    const json = await fetchJson(`${geocodingUrl}?name=${location}`);
+    res.json(json);
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const getCityName = (req: Request, res: Response) => {
+type ReverseGeocodingResponse = {
+  address?: {
+    county?: string;
+    city?: string;
+    town?: string;
+    village?: string;
+  };
+};
+
+export const getCityName = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const latitude = req.query.latitude as string;
   const longitude = req.query.longitude as string;
 
   if (!latitude || !longitude) {
-    throw new Error("Wrong URL query params");
+    return next(
+      new CustomError(400, "INVALID_QUERY", "Wrong URL query params")
+    );
   }
 
-  fetch(`${openStreetMapUrl}?lat=${latitude}&lon=${longitude}&format=json`, {
-    headers: {
-      Accept: "application/json",
-      "Accept-Language": "en",
-      "User-Agent": "weather-app-main/1.0 (development contact: local-app)",
-    },
-  })
-    .then((response) => response.json())
-    .then((json) =>
-      res.json(
-        json.address?.city || json.address?.town || json.address?.village || ""
-      )
+  try {
+    const json = await fetchJson<ReverseGeocodingResponse>(
+      `${openStreetMapUrl}?lat=${latitude}&lon=${longitude}&format=json`,
+      {
+        headers: {
+          Accept: "application/json",
+          "Accept-Language": "en",
+          "User-Agent": "weather-app-main/1.0 (development contact: local-app)",
+        },
+      }
     );
+
+    console.log("✳️ -> ", json.address);
+
+    res.json(
+      json.address?.county ||
+        json.address?.city ||
+        json.address?.town ||
+        json.address?.village ||
+        ""
+    );
+  } catch (error) {
+    next(error);
+  }
 };

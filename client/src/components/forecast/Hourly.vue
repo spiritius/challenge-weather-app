@@ -34,7 +34,7 @@ import { computed, ref } from "vue";
 import WeatherIcon from "@/components/shared/WeatherIcon.vue";
 import Dropdown from "@/components/controls/Dropdown.vue";
 import Button from "@/components/controls/Button.vue";
-import { Hourly } from "@/services/api";
+import type { Hourly } from "@/services/types";
 import { formatTime, formatWeekday } from "@/utils/formatDate";
 
 type DayItem = {

@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { ForecastResponse } from "@/services/api";
+import type { ForecastResponse } from "@/services/types";
 import WeatherIcon from "@/components/shared/WeatherIcon.vue";
 import { formatDate } from "@/utils/formatDate";
 

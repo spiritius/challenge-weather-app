@@ -38,10 +38,10 @@ withDefaults(
   justify-content: center;
   gap: 0.5rem;
   border-radius: var(--radius-md);
-  border: 1px solid transparent;
   cursor: pointer;
   transition: background-color 180ms ease, border-color 180ms ease,
     color 180ms ease, opacity 180ms ease;
+  min-width: 100px;
 }
 
 .button:disabled {
@@ -57,7 +57,6 @@ withDefaults(
 .button--secondary {
   background-color: var(--element-bg);
   color: var(--color-gray-100);
-  border-color: var(--element-border);
 }
 
 .button--md {
