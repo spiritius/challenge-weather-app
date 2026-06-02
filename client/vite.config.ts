@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/challenge-weather-app/",
   resolve: {
     alias: {
       "@": new URL("./src", import.meta.url).pathname,
