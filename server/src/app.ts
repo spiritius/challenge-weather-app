@@ -6,6 +6,8 @@ import appRouter from "./routes";
 import { errorHandler } from "./middlewares/error-handler";
 
 const app = express();
+const port = process.env.PORT || 3000;
+const host = process.env.HOST || "0.0.0.0";
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -17,6 +19,6 @@ app.use(appRouter);
 
 app.use(errorHandler);
 
-app.listen(3000, () => {
-  console.log("Server is running on http://localhost:3000");
+app.listen(Number(port), host, () => {
+  console.log(`Server is running on http://${host}:${port}`);
 });
