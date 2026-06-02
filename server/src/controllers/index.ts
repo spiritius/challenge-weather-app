@@ -15,9 +15,9 @@ if (!geocodingUrl) {
   throw new Error("GEOCODING_URL is not defined");
 }
 
-const openStreetMapUrl = process.env.OPEN_SCTREET_MAP_URL || "";
+const openStreetMapUrl = process.env.OPEN_STREET_MAP_URL || "";
 if (!openStreetMapUrl) {
-  throw new Error("OPEN_SCTREET_MAP_URL is not defined");
+  throw new Error("OPEN_STREET_MAP_URL is not defined");
 }
 
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
