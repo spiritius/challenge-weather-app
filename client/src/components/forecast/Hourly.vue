@@ -92,14 +92,33 @@ const daysList = computed(() => {
   });
 });
 
+const currentHour = computed(() => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hour = String(now.getHours()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hour}:00`;
+});
+
 const activeDay = ref<DayItem | null>(daysList.value[0] ?? null);
 
 const visibleHours = computed(() => {
-  if (!activeDay.value) {
-    return groupedHours.value;
-  }
+  const currentDate = currentHour.value.split("T")[0];
+  const selectedHours = activeDay.value
+    ? groupedHours.value.filter((day) => day.date === activeDay.value?.id)
+    : groupedHours.value;
 
-  return groupedHours.value.filter((day) => day.date === activeDay.value?.id);
+  return selectedHours.map((day) => {
+    if (day.date !== currentDate) {
+      return day;
+    }
+
+    return {
+      ...day,
+      items: day.items.filter((hour) => hour.time >= currentHour.value),
+    };
+  });
 });
 
 const handleDayClick = (item: DayItem) => {

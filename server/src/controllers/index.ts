@@ -155,8 +155,6 @@ export const getCityName = async (
       }
     );
 
-    console.log("✳️ -> ", json.address);
-
     res.json(
       json.address?.county ||
         json.address?.city ||
