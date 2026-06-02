@@ -1,4 +1,23 @@
-# Frontend Mentor - Weather app
+# Weather app Challange (Node.js Backend Learning Project)
+
+A project for learning and exploring Node.js backend development.
+
+The project consists of a frontend built with **Vue 3 + TypeScript** and a **REST API**, with the backend implemented using **Node.js + Express**.
+
+## Backend Features
+
+- Created API routes
+- Implemented controllers
+- Added middleware for centralized error handling
+
+## Data Sources
+
+- [**Open-Meteo**](https://open-meteo.com) — weather forecasts and meteorological data based on geographic coordinates.
+- [**Nominatim (OpenStreetMap)**](https://nominatim.openstreetmap.org) — determines the user's city or locality from geographic coordinates when geolocation access is granted.
+
+Below are the details of the original challenge.
+
+----
 
 ![Design preview for the Weather app coding challenge](./preview.jpg)
 
