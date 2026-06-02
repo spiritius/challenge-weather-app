@@ -1,8 +1,12 @@
 # Weather app Challange (Node.js Backend Learning Project)
 
+**Demo**: https://spiritius.github.io/challenge-weather-app/
+
 A project for learning and exploring Node.js backend development.
 
 The project consists of a frontend built with **Vue 3 + TypeScript** and a **REST API**, with the backend implemented using **Node.js + Express**.
+
+Hosting: GitHub pages for client and Render.com for backend
 
 ## Backend Features
 
